@@ -8674,7 +8674,7 @@
   --gray-lighter: #e8eff4;
   --gray-lightest: #e6e9ed;
   --black: #000000;
-  --primary: #f2125e;
+  --primary: #12a2f2;
   --secondary: #392ccd;
   --success: #17c964;
   --info: #2b80ff;
@@ -10952,14 +10952,14 @@ fieldset:disabled a.btn {
 
 .btn-primary {
   color: #fff;
-  background-color: #f2125e;
-  border-color: #f2125e;
+  background-color: #12a2f2;
+  border-color: #12a2f2;
 }
 
 .btn-primary:hover {
   color: #fff;
-  background-color: #d20c4f;
-  border-color: #c60b4a;
+  background-color: #12a2f2;
+  border-color: #12a2f2;
 }
 
 .btn-primary:focus, .btn-primary.focus {
@@ -10968,15 +10968,15 @@ fieldset:disabled a.btn {
 
 .btn-primary.disabled, .btn-primary:disabled {
   color: #fff;
-  background-color: #f2125e;
-  border-color: #f2125e;
+  background-color: #12a2f2;
+  border-color: #12a2f2;
 }
 
 .btn-primary:not(:disabled):not(.disabled):active, .btn-primary:not(:disabled):not(.disabled).active,
 .show > .btn-primary.dropdown-toggle {
   color: #fff;
-  background-color: #c60b4a;
-  border-color: #ba0a46;
+  background-color: #12a2f2;
+  border-color: #12a2f2;
 }
 
 .btn-primary:not(:disabled):not(.disabled):active:focus, .btn-primary:not(:disabled):not(.disabled).active:focus,
@@ -11223,14 +11223,14 @@ fieldset:disabled a.btn {
 }
 
 .btn-outline-primary {
-  color: #f2125e;
-  border-color: #f2125e;
+  color: #12a2f2;
+  border-color: #12a2f2;
 }
 
 .btn-outline-primary:hover {
   color: #fff;
-  background-color: #f2125e;
-  border-color: #f2125e;
+  background-color: #12a2f2;
+  border-color: #12a2f2;
 }
 
 .btn-outline-primary:focus, .btn-outline-primary.focus {
@@ -11238,15 +11238,15 @@ fieldset:disabled a.btn {
 }
 
 .btn-outline-primary.disabled, .btn-outline-primary:disabled {
-  color: #f2125e;
+  color: #12a2f2;
   background-color: transparent;
 }
 
 .btn-outline-primary:not(:disabled):not(.disabled):active, .btn-outline-primary:not(:disabled):not(.disabled).active,
 .show > .btn-outline-primary.dropdown-toggle {
   color: #fff;
-  background-color: #f2125e;
-  border-color: #f2125e;
+  background-color: #12a2f2;
+  border-color: #12a2f2;
 }
 
 .btn-outline-primary:not(:disabled):not(.disabled):active:focus, .btn-outline-primary:not(:disabled):not(.disabled).active:focus,
@@ -15056,7 +15056,7 @@ button.bg-dark:focus,
 }
 
 .border-primary {
-  border-color: #f2125e !important;
+  border-color: #12a2f2 !important;
 }
 
 .border-secondary, .loader-demo-box {
@@ -18104,6 +18104,10 @@ button.bg-dark:focus,
   color: #ffffff !important;
 }
 
+.text-login {
+  color: #005b96 !important;
+}
+
 .text-primary, .list-wrapper .completed .remove {
   color: #f2125e !important;
 }
@@ -18732,11 +18736,11 @@ address p {
 }
 
 .blockquote-primary {
-  border-color: #f2125e;
+  border-color: #12a2f2;
 }
 
 .blockquote-primary .blockquote-footer {
-  color: #f2125e;
+  color: #12a2f2;
 }
 
 .blockquote-secondary {
@@ -19789,13 +19793,13 @@ code {
 }
 
 .btn-inverse-primary:not(.btn-inverse-light) {
-  color: #f2125e;
+  color: #12a2f2;
 }
 
 .btn-inverse-primary:hover {
   color: #ffffff;
-  background-color: #f2125e;
-  border-color: #f2125e;
+  background-color: #12a2f2;
+  border-color: #12a2f2;
 }
 
 .btn-inverse-primary.focus, .btn-inverse-primary:focus {
@@ -19803,15 +19807,15 @@ code {
 }
 
 .btn-inverse-primary.disabled, .btn-inverse-primary:disabled {
-  color: #f2125e;
+  color: #12a2f2;
   background-color: transparent;
 }
 
 .btn-inverse-primary.active, .btn-inverse-primary:active,
 .show > .btn-inverse-primary.dropdown-toggle {
   color: #ffffff;
-  background-color: #f2125e;
-  border-color: #f2125e;
+  background-color: #12a2f2;
+  border-color: #12a2f2;
 }
 
 .btn-inverse-secondary {
@@ -20402,12 +20406,12 @@ code {
 
 .form-check-primary.form-check label input[type="checkbox"] + .input-helper:before,
 .form-check-primary.form-check label input[type="radio"] + .input-helper:before {
-  border-color: #f2125e;
+  border-color: #12a2f2;
 }
 
 .form-check-primary.form-check label input[type="checkbox"]:checked + .input-helper:before,
 .form-check-primary.form-check label input[type="radio"]:checked + .input-helper:before {
-  background: #f2125e;
+  background: #12a2f2;
 }
 
 .form-check-secondary.form-check label input[type="checkbox"] + .input-helper:before,
@@ -23104,7 +23108,6 @@ body.avgrund-active {
 }
 
 .content-wrapper {
-  background: #e8eff9;
   padding: 1.875rem 1.875rem 0 1.875rem;
   width: 100%;
   -webkit-flex-grow: 1;

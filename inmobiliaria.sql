@@ -1,189 +1,300 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Generation Time: Jun 03, 2025 at 11:24 PM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
+
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
 
-CREATE TABLE `Acceso` (
-  `ID_Acceso` int(11) NOT NULL,
-  `Nombre_Usuario` varchar(45) DEFAULT NULL,
-  `Telefono` varchar(45) DEFAULT NULL
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `inmobiliaria`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `agente`
+--
+
+CREATE TABLE `agente` (
+  `id` int(11) NOT NULL,
+  `nombre_completo` varchar(100) DEFAULT NULL,
+  `telefono` varchar(20) DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL,
+  `usuario_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `agente`
+--
+
+INSERT INTO `agente` (`id`, `nombre_completo`, `telefono`, `email`, `usuario_id`) VALUES
+(1, 'ana luna', '04167898745', 'guhgrgt@gmail.com', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cliente`
+--
+
+CREATE TABLE `cliente` (
+  `id` int(11) NOT NULL,
+  `ci` varchar(20) DEFAULT NULL,
+  `nombre_completo` varchar(100) DEFAULT NULL,
+  `telefono` varchar(20) DEFAULT NULL,
+  `genero` enum('M','F','Otro') DEFAULT NULL,
+  `email` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `cliente`
+--
+
+INSERT INTO `cliente` (`id`, `ci`, `nombre_completo`, `telefono`, `genero`, `email`) VALUES
+(3, '42344', 'fgfgfg', '565456', 'F', 'fsyfvgsyf@gmail.com');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `propiedad`
+--
+
+CREATE TABLE `propiedad` (
+  `id` int(11) NOT NULL,
+  `nombre` varchar(100) DEFAULT NULL,
+  `tipo` varchar(45) DEFAULT NULL,
+  `precio` decimal(12,2) DEFAULT NULL,
+  `estado` enum('disponible','vendido','reservado') DEFAULT NULL,
+  `tamanio` varchar(45) DEFAULT NULL,
+  `descripcion` text DEFAULT NULL,
+  `propietario_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `Agente`
+-- Table structure for table `propiedad_imagen`
 --
 
-CREATE TABLE `Agente` (
-  `ID_Agente` int(11) NOT NULL,
-  `Nombre_Completo` varchar(45) DEFAULT NULL,
-  `Telefono` varchar(45) DEFAULT NULL,
-  `Email` varchar(45) DEFAULT NULL
+CREATE TABLE `propiedad_imagen` (
+  `id` int(11) NOT NULL,
+  `propiedad_id` int(11) NOT NULL,
+  `ruta` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `Cliente`
+-- Table structure for table `propietario`
 --
 
-CREATE TABLE `Cliente` (
-  `ID_Cliente` int(11) NOT NULL,
-  `CI` varchar(45) DEFAULT NULL,
-  `Nombre_Completo` varchar(45) DEFAULT NULL,
-  `Telefono` varchar(45) DEFAULT NULL,
-  `Genero` varchar(45) DEFAULT NULL,
-  `Email` varchar(45) DEFAULT NULL
+CREATE TABLE `propietario` (
+  `id` int(11) NOT NULL,
+  `nombre` varchar(100) DEFAULT NULL,
+  `telefono` varchar(20) DEFAULT NULL,
+  `correo` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `propietario`
+--
+
+INSERT INTO `propietario` (`id`, `nombre`, `telefono`, `correo`) VALUES
+(2, 'retrtyry', '345545643', 'fsgrfty@gmail.com');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `solicitud`
+--
+
+CREATE TABLE `solicitud` (
+  `id` int(11) NOT NULL,
+  `fecha` date DEFAULT NULL,
+  `estado` enum('pendiente','aceptada','rechazada') DEFAULT NULL,
+  `cliente_id` int(11) DEFAULT NULL,
+  `propiedad_id` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `solicitud`
+--
+
+INSERT INTO `solicitud` (`id`, `fecha`, `estado`, `cliente_id`, `propiedad_id`) VALUES
+(1, '2025-05-06', 'aceptada', 1, 1),
+(2, '2025-05-06', 'rechazada', 1, 2),
+(3, '2025-05-06', 'aceptada', 3, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `usuarios`
+--
+
+CREATE TABLE `usuarios` (
+  `id` int(11) NOT NULL,
+  `nombre_usuario` varchar(45) NOT NULL,
+  `contrasena` varchar(255) NOT NULL,
+  `rol` enum('admin','agente') DEFAULT 'agente'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
 --
--- Estructura de tabla para la tabla `Propiedad`
+-- Table structure for table `venta`
 --
 
-CREATE TABLE `Propiedad` (
-  `ID_propiedad` int(11) NOT NULL,
-  `Nombre` varchar(45) DEFAULT NULL,
-  `Tipo` varchar(45) DEFAULT NULL,
-  `Precio` varchar(45) DEFAULT NULL,
-  `Estado` varchar(45) DEFAULT NULL,
-  `Tamanio` varchar(45) DEFAULT NULL,
-  `Descripcion` varchar(45) DEFAULT NULL,
-  `Propiedad_ID_Propiedad` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `Propiedad_has_Solicitudes`
---
-
-CREATE TABLE `Propiedad_has_Solicitudes` (
-  `Propiedad_ID_propiedad` int(11) NOT NULL,
-  `Solicitudes_ID_Solicitudes` int(11) NOT NULL,
-  `Solicitudes_ID_cliente` varchar(45) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `Propietario`
---
-
-CREATE TABLE `Propietario` (
-  `ID_Propiedad` int(11) NOT NULL,
-  `Nombre` varchar(45) DEFAULT NULL,
-  `Telefono` varchar(45) DEFAULT NULL,
-  `Correo` varchar(45) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `Solicitudes`
---
-
-CREATE TABLE `Solicitudes` (
-  `ID_Solicitudes` int(11) NOT NULL,
-  `Fecha_solicitud` varchar(45) DEFAULT NULL,
-  `Estado` varchar(45) DEFAULT NULL,
-  `ID_cliente` varchar(45) DEFAULT NULL,
-  `ID_producto` varchar(45) DEFAULT NULL,
-  `Solicitudescol` varchar(45) DEFAULT NULL,
-  `Cliente_ID_Cliente` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Estructura de tabla para la tabla `Venta`
---
-
-CREATE TABLE `Venta` (
-  `ID_Venta` int(11) NOT NULL,
-  `Fechal` varchar(45) DEFAULT NULL,
-  `Monto` varchar(45) DEFAULT NULL,
-  `ID_Cliente` varchar(45) DEFAULT NULL,
-  `ID_Agente` varchar(45) DEFAULT NULL,
-  `Agente_ID_Agente` int(11) DEFAULT NULL
+CREATE TABLE `venta` (
+  `id` int(11) NOT NULL,
+  `fecha` date DEFAULT NULL,
+  `monto` decimal(12,2) DEFAULT NULL,
+  `cliente_id` int(11) DEFAULT NULL,
+  `agente_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Índices para tablas volcadas
+-- Dumping data for table `venta`
+--
+
+INSERT INTO `venta` (`id`, `fecha`, `monto`, `cliente_id`, `agente_id`) VALUES
+(1, '2025-05-12', 3435.00, 1, 1),
+(2, '2025-05-05', 3432.00, 3, 1);
+
+--
+-- Indexes for dumped tables
 --
 
 --
--- Indices de la tabla `Acceso`
+-- Indexes for table `agente`
 --
-ALTER TABLE `Acceso`
-  ADD PRIMARY KEY (`ID_Acceso`);
+ALTER TABLE `agente`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `usuario_id` (`usuario_id`);
 
 --
--- Indices de la tabla `Agente`
+-- Indexes for table `cliente`
 --
-ALTER TABLE `Agente`
-  ADD PRIMARY KEY (`ID_Agente`);
+ALTER TABLE `cliente`
+  ADD PRIMARY KEY (`id`);
 
 --
--- Indices de la tabla `Cliente`
+-- Indexes for table `propiedad`
 --
-ALTER TABLE `Cliente`
-  ADD PRIMARY KEY (`ID_Cliente`);
+ALTER TABLE `propiedad`
+  ADD PRIMARY KEY (`id`);
 
 --
--- Indices de la tabla `Propiedad`
+-- Indexes for table `propiedad_imagen`
 --
-ALTER TABLE `Propiedad`
-  ADD PRIMARY KEY (`ID_propiedad`);
+ALTER TABLE `propiedad_imagen`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `propiedad_id` (`propiedad_id`);
 
 --
--- Indices de la tabla `Propiedad_has_Solicitudes`
+-- Indexes for table `propietario`
 --
-ALTER TABLE `Propiedad_has_Solicitudes`
-  ADD PRIMARY KEY (`Propiedad_ID_propiedad`,`Solicitudes_ID_Solicitudes`),
-  ADD KEY `Solicitudes_ID_Solicitudes` (`Solicitudes_ID_Solicitudes`);
+ALTER TABLE `propietario`
+  ADD PRIMARY KEY (`id`);
 
 --
--- Indices de la tabla `Propietario`
+-- Indexes for table `solicitud`
 --
-ALTER TABLE `Propietario`
-  ADD PRIMARY KEY (`ID_Propiedad`);
+ALTER TABLE `solicitud`
+  ADD PRIMARY KEY (`id`);
 
 --
--- Indices de la tabla `Solicitudes`
+-- Indexes for table `usuarios`
 --
-ALTER TABLE `Solicitudes`
-  ADD PRIMARY KEY (`ID_Solicitudes`),
-  ADD KEY `Cliente_ID_Cliente` (`Cliente_ID_Cliente`);
+ALTER TABLE `usuarios`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `nombre_usuario` (`nombre_usuario`);
 
 --
--- Indices de la tabla `Venta`
+-- Indexes for table `venta`
 --
-ALTER TABLE `Venta`
-  ADD PRIMARY KEY (`ID_Venta`),
-  ADD KEY `Agente_ID_Agente` (`Agente_ID_Agente`);
+ALTER TABLE `venta`
+  ADD PRIMARY KEY (`id`);
 
 --
--- Restricciones para tablas volcadas
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- Filtros para la tabla `Propiedad_has_Solicitudes`
+-- AUTO_INCREMENT for table `agente`
 --
-ALTER TABLE `Propiedad_has_Solicitudes`
-  ADD CONSTRAINT `Propiedad_has_Solicitudes_ibfk_1` FOREIGN KEY (`Propiedad_ID_propiedad`) REFERENCES `Propiedad` (`ID_propiedad`),
-  ADD CONSTRAINT `Propiedad_has_Solicitudes_ibfk_2` FOREIGN KEY (`Solicitudes_ID_Solicitudes`) REFERENCES `Solicitudes` (`ID_Solicitudes`);
+ALTER TABLE `agente`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- Filtros para la tabla `Solicitudes`
+-- AUTO_INCREMENT for table `cliente`
 --
-ALTER TABLE `Solicitudes`
-  ADD CONSTRAINT `Solicitudes_ibfk_1` FOREIGN KEY (`Cliente_ID_Cliente`) REFERENCES `Cliente` (`ID_Cliente`);
+ALTER TABLE `cliente`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- Filtros para la tabla `Venta`
+-- AUTO_INCREMENT for table `propiedad`
 --
-ALTER TABLE `Venta`
-  ADD CONSTRAINT `Venta_ibfk_1` FOREIGN KEY (`Agente_ID_Agente`) REFERENCES `Agente` (`ID_Agente`);
+ALTER TABLE `propiedad`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT for table `propiedad_imagen`
+--
+ALTER TABLE `propiedad_imagen`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `propietario`
+--
+ALTER TABLE `propietario`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT for table `solicitud`
+--
+ALTER TABLE `solicitud`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `usuarios`
+--
+ALTER TABLE `usuarios`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT for table `venta`
+--
+ALTER TABLE `venta`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `agente`
+--
+ALTER TABLE `agente`
+  ADD CONSTRAINT `agente_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`);
+
+--
+-- Constraints for table `propiedad_imagen`
+--
+ALTER TABLE `propiedad_imagen`
+  ADD CONSTRAINT `propiedad_imagen_ibfk_1` FOREIGN KEY (`propiedad_id`) REFERENCES `propiedad` (`id`) ON DELETE CASCADE;
 COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

@@ -8,18 +8,6 @@ if (!isset($_SESSION['usuario'])) {
   exit;
 }
 
-// ELIMINAR CLIENTE 
-if (isset($_GET['eliminar'])) {
-  $id = intval($_GET['eliminar']);
-  if ($conexion->query("DELETE FROM cliente WHERE id = $id")) {
-    header("Location: clientes.php");
-    exit();
-  } else {
-    echo "Error al eliminar: " . $conexion->error;
-    exit();
-  }
-}
-
 $modo_edicion = false;
 $modo_ver = false;
 
@@ -79,205 +67,231 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Inmobiliaria</title>
-  <link rel="stylesheet" href="vendors/typicons.font/font/typicons.css">
-  <link rel="stylesheet" href="vendors/css/vendor.bundle.base.css">
-  <link rel="stylesheet" href="css/vertical-layout-light/style.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Inmobiliaria</title>
+    <link rel="stylesheet" href="vendors/typicons.font/font/typicons.css">
+    <link rel="stylesheet" href="vendors/css/vendor.bundle.base.css">
+    <link rel="stylesheet" href="css/vertical-layout-light/style.css">
 </head>
 
 <body>
-  <div class="container-scroller">
-    <nav class="navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
-      <div class="navbar-menu-wrapper d-flex align-items-center justify-content-end">
-        <ul class="navbar-nav navbar-nav-right">
-          <li class="nav-item nav-profile dropdown">
-            <a class="nav-link dropdown-toggle  pl-0 pr-0" href="#" data-toggle="dropdown" id="profileDropdown">
-              <i class="typcn typcn-user-outline mr-0"></i>
-              <span class="nav-profile-name">Evan Morales</span>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="profileDropdown">
-              <a class="dropdown-item">
-                <i class="typcn typcn-cog text-primary"></i>
-                Settings
-              </a>
-              <a href="logout.php" class="btn btn-danger">Cerrar sesión
-                <i class="typcn typcn-power text-primary"></i>
-                Logout
-              </a>
-            </div>
-          </li>
-        </ul>
-        <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
-          <span class="typcn typcn-th-menu"></span>
-        </button>
-      </div>
-    </nav>
-    <div class="container-fluid page-body-wrapper">
-      <div class="theme-setting-wrapper">
-        <div id="settings-trigger"><i class="typcn typcn-cog-outline"></i></div>
-        <div id="theme-settings" class="settings-panel">
-          <i class="settings-close typcn typcn-delete-outline"></i>
-          <p class="settings-heading">SIDEBAR SKINS</p>
-          <div class="sidebar-bg-options" id="sidebar-light-theme">
-            <div class="img-ss rounded-circle bg-light border mr-3"></div>
-            Light
-          </div>
-          <div class="sidebar-bg-options selected" id="sidebar-dark-theme">
-            <div class="img-ss rounded-circle bg-dark border mr-3"></div>
-            Dark
-          </div>
-          <p class="settings-heading mt-2">HEADER SKINS</p>
-          <div class="color-tiles mx-0 px-4">
-            <div class="tiles success"></div>
-            <div class="tiles warning"></div>
-            <div class="tiles danger"></div>
-            <div class="tiles primary"></div>
-            <div class="tiles info"></div>
-            <div class="tiles dark"></div>
-            <div class="tiles default border"></div>
-          </div>
-        </div>
-      </div>
-      <nav class="sidebar sidebar-offcanvas" id="sidebar">
-        <ul class="nav">
-          <li class="nav-item">
-            <div class="d-flex sidebar-profile">
-              <div class="sidebar-profile-name">
-                <p class="sidebar-name">
-                  Inmobiliaria
-                </p>
-                <p class="sidebar-designation">
-                  Inicio
-                </p>
-              </div>
-            </div>
-            <p class="sidebar-menu-title">MENÚ</p>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="dashboard.php">
-              <i class="typcn typcn-device-desktop menu-icon"></i>
-              <span class="menu-title">Dashboard </span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="agentes.php">
-              <i class="typcn typcn-document-text menu-icon"></i>
-              <span class="menu-title">Agenetes</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="clientes.php">
-              <i class="typcn typcn-document-text menu-icon"></i>
-              <span class="menu-title">Clientes</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="propietarios.php">
-              <i class="typcn typcn-document-text menu-icon"></i>
-              <span class="menu-title">Propietarios</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="propiedades.php">
-              <i class="typcn typcn-document-text menu-icon"></i>
-              <span class="menu-title">Propiedades</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="solicitudes.php">
-              <i class="typcn typcn-document-text menu-icon"></i>
-              <span class="menu-title">Solicitudes</span>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="ventas.php">
-              <i class="typcn typcn-document-text menu-icon"></i>
-              <span class="menu-title">Ventas</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
-      <div class="main-panel">
-        <div class="content-wrapper">
-          <div class="row">
-            <div class="col-sm-6">
-              <h3 class="mb-0 font-weight-bold">Clientes</h3>
-            </div>
-          </div>
-          <div class="content-wrapper">
-            <div class="row">
-              <!-- Formulario para registrar / editar cliente -->
-              <div class="col-md-6 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <h4 class="card-title"><?= $modo_edicion ? 'Editar Cliente' : 'Registrar Cliente' ?></h4>
-                    <form class="forms-sample" method="POST" action="" <?= $modo_ver ? 'onsubmit="return false;"' : '' ?>>
-                      <input type="hidden" name="id" value="<?= $cliente['id'] ?>">
+    <div class="container-scroller">
+        <style>
+        .navbar-custom {
+            background-color: #3498db;
+            /* Azul suave (puedes ajustar) */
+        }
 
-                      <div class="form-group">
-                        <label for="ci">Cédula de Identidad</label>
-                        <input type="text" class="form-control" name="ci" value="<?= $cliente['ci'] ?>" required <?= $modo_ver ? 'readonly' : '' ?>>
-                      </div>
+        .navbar .dropdown-menu a {
+            color: #333;
+        }
 
-                      <div class="form-group">
-                        <label for="nombre">Nombre completo</label>
-                        <input type="text" class="form-control" name="nombre" value="<?= $cliente['nombre_completo'] ?>" required <?= $modo_ver ? 'readonly' : '' ?>>
-                      </div>
+        .navbar .dropdown-menu a:hover {
+            background-color: #f2f2f2;
+        }
+        </style>
+        <nav class="navbar navbar-expand-lg navbar-custom fixed-top w-100 d-flex flex-row">
+            <div class="container-fluid d-flex justify-content-between align-items-center">
 
-                      <div class="form-group">
-                        <label for="telefono">Teléfono</label>
-                        <input type="text" class="form-control" name="telefono" value="<?= $cliente['telefono'] ?>" required <?= $modo_ver ? 'readonly' : '' ?>>
-                      </div>
-
-                      <div class="form-group">
-                        <label for="genero">Género</label>
-                        <select class="form-control" name="genero" required <?= $modo_ver ? 'disabled' : '' ?>>
-                          <option value="">Seleccione</option>
-                          <option value="M" <?= $cliente['genero'] == 'M' ? 'selected' : '' ?>>Masculino</option>
-                          <option value="F" <?= $cliente['genero'] == 'F' ? 'selected' : '' ?>>Femenino</option>
-                          <option value="Otro" <?= $cliente['genero'] == 'Otro' ? 'selected' : '' ?>>Otro</option>
-                        </select>
-                      </div>
-
-                      <div class="form-group">
-                        <label for="email">Correo electrónico</label>
-                        <input type="email" class="form-control" name="email" value="<?= $cliente['email'] ?>" required <?= $modo_ver ? 'readonly' : '' ?>>
-                      </div>
-
-                      <?php if (!$modo_ver) : ?>
-                        <button type="submit" class="btn btn-primary mr-2"><?= $modo_edicion ? 'Actualizar' : 'Guardar' ?></button>
-                        <a href="clientes.php" class="btn btn-light">Cancelar</a>
-                      <?php else : ?>
-                        <a href="clientes.php" class="btn btn-light">Volver</a>
-                      <?php endif; ?>
-                    </form>
-
-                  </div>
+                <div class="navbar-brand text-white pl-3 font-weight-bold"
+                    style="text-shadow: 2px 2px 4px rgba(0,0,0,0.8);">
+                    HOME & STYLE
                 </div>
-              </div>
 
-              <!-- Tabla de clientes -->
-              <div class="col-lg-6 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <h4 class="card-title">Lista de Clientes</h4>
-                    <div class="table-responsive">
-                      <table class="table table-striped" id="tablaClientes">
-                        <thead>
-                          <tr>
-                            <th>ID</th>
-                            <th>C.I.</th>
-                            <th>Nombre</th>
-                            <th>Teléfono</th>
-                            <th>Género</th>
-                            <th>Email</th>
-                            <th>Acciones</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <?php
+
+                <div class=" d-flex align-items-center justify-content-end">
+                    <ul class="navbar-nav navbar-nav-right">
+                        <li class="nav-item nav-profile dropdown">
+                            <a class="nav-link dropdown-toggle text-white pl-0 pr-0" href="#" data-toggle="dropdown"
+                                id="profileDropdown">
+                                <i class="typcn typcn-user-outline mr-1"></i>
+                                <span
+                                    class="nav-profile-name"><?= htmlspecialchars($_SESSION['usuario'] ?? 'Invitado') ?></span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right navbar-dropdown"
+                                aria-labelledby="profileDropdown">
+                                
+                                <a href="logout.php" class="dropdown-item text-danger">
+                                    <i class="typcn typcn-power mr-2"></i> Cerrar sesión
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
+
+
+                </div>
+            </div>
+        </nav>
+        <div class="container-fluid page-body-wrapper">
+            <nav class="sidebar sidebar-offcanvas" id="sidebar">
+                <ul class="nav">
+                    <li class="nav-item">
+                        <div class="d-flex sidebar-profile">
+                            <div class="sidebar-profile-name">
+                                <p class="sidebar-name">
+                                    Inmobiliaria
+                                </p>
+                                <p class="sidebar-designation">
+                                    Inicio
+                                </p>
+                            </div>
+
+
+                        </div>
+                        <button id="toggleSidebarBtn" class="btn btn-sm btn-outline-light ml-3">
+                            <i class="typcn typcn-arrow-left-outline"></i>
+                        </button>
+                        <p class="sidebar-menu-title">MENÚ</p>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.php">
+                            <i class="typcn typcn-device-desktop menu-icon"></i>
+                            <span class="menu-title">Dashboard </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="agentes.php">
+                            <i class="typcn typcn-document-text menu-icon"></i>
+                            <span class="menu-title">Agenetes</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="clientes.php">
+                            <i class="typcn typcn-document-text menu-icon"></i>
+                            <span class="menu-title">Clientes</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="propietarios.php">
+                            <i class="typcn typcn-document-text menu-icon"></i>
+                            <span class="menu-title">Propietarios</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="propiedades.php">
+                            <i class="typcn typcn-document-text menu-icon"></i>
+                            <span class="menu-title">Propiedades</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="solicitudes.php">
+                            <i class="typcn typcn-document-text menu-icon"></i>
+                            <span class="menu-title">Solicitudes</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="ventas.php">
+                            <i class="typcn typcn-document-text menu-icon"></i>
+                            <span class="menu-title">Ventas</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            <div class="main-panel">
+                <div class="content-wrapper">
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <h3 class="mb-0 font-weight-bold">Clientes</h3>
+                        </div>
+                    </div>
+                    <div class="content-wrapper">
+                        <div class="row">
+                            <!-- Formulario para registrar / editar cliente -->
+                            <div class="col-md-6 grid-margin stretch-card">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="card-title">
+                                            <?= $modo_edicion ? 'Editar Cliente' : 'Registrar Cliente' ?></h4>
+                                        <form class="forms-sample" method="POST" action=""
+                                            <?= $modo_ver ? 'onsubmit="return false;"' : '' ?>>
+                                            <input type="hidden" name="id" value="<?= $cliente['id'] ?>">
+                                            <p class="text-muted mb-3"><span class="text-danger">*</span> Campos
+                                                obligatorios</p>
+                                            <div class="form-group">
+                                                <label for="ci">Cédula de Identidad<span
+                                                        class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" name="ci"
+                                                    value="<?= $cliente['ci'] ?>" required
+                                                    <?= $modo_ver ? 'readonly' : '' ?>
+                                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="nombre">Nombre completo<span
+                                                        class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" name="nombre"
+                                                    value="<?= $cliente['nombre_completo'] ?>" required
+                                                    <?= $modo_ver ? 'readonly' : '' ?>
+                                                    oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="telefono">Teléfono<span class="text-danger">*</span></label>
+                                                <input type="text" class="form-control" name="telefono"
+                                                    value="<?= $cliente['telefono'] ?>" required
+                                                    <?= $modo_ver ? 'readonly' : '' ?>
+                                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="genero">Género<span class="text-danger">*</span></label>
+                                                <select class="form-control" name="genero" required
+                                                    <?= $modo_ver ? 'disabled' : '' ?>>
+                                                    <option value="">Seleccione</option>
+                                                    <option value="M"
+                                                        <?= $cliente['genero'] == 'M' ? 'selected' : '' ?>>Masculino
+                                                    </option>
+                                                    <option value="F"
+                                                        <?= $cliente['genero'] == 'F' ? 'selected' : '' ?>>Femenino
+                                                    </option>
+                                                    <option value="Otro"
+                                                        <?= $cliente['genero'] == 'Otro' ? 'selected' : '' ?>>Otro
+                                                    </option>
+                                                </select>
+                                            </div>
+
+                                            <div class="form-group">
+                                                <label for="email">Correo electrónico<span
+                                                        class="text-danger">*</span></label>
+                                                <input type="email" class="form-control" name="email"
+                                                    value="<?= $cliente['email'] ?>" required
+                                                    <?= $modo_ver ? 'readonly' : '' ?>>
+                                            </div>
+
+                                            <?php if (!$modo_ver) : ?>
+                                            <button type="submit"
+                                                class="btn btn-primary mr-2"><?= $modo_edicion ? 'Actualizar' : 'Guardar' ?></button>
+                                            <a href="clientes.php" class="btn btn-light">Cancelar</a>
+                                            <?php else : ?>
+                                            <a href="clientes.php" class="btn btn-light">Volver</a>
+                                            <?php endif; ?>
+                                        </form>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tabla de clientes -->
+                            <div class="col-lg-6 grid-margin stretch-card">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h4 class="card-title">Lista de Clientes</h4>
+                                        <div class="table-responsive">
+                                            <table class="table table-striped" id="tablaClientes">
+                                                <thead>
+                                                    <tr>
+                                                        <th>ID</th>
+                                                        <th>C.I.</th>
+                                                        <th>Nombre</th>
+                                                        <th>Teléfono</th>
+                                                        <th>Género</th>
+                                                        <th>Email</th>
+                                                        <th>Acciones</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <?php
                           $resultado = $conexion->query("SELECT * FROM cliente");
                           while ($row = $resultado->fetch_assoc()) {
                             echo '<tr>
@@ -288,49 +302,59 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           <td>' . $row['genero'] . '</td>
           <td>' . $row['email'] . '</td>
           <td>
-            <a href="clientes.php?editar=' . $row['id'] . '" class="btn btn-sm btn-warning">Editar</a>
-            <a href="clientes.php?eliminar=' . $row['id'] . '" class="btn btn-sm btn-danger" onclick="return confirm(\'¿Seguro que deseas eliminar este cliente?\')">Eliminar</a>
-            <a href="clientes.php?ver=' . $row['id'] . '" class="btn btn-sm btn-info">Ver</a>
+            <a href="clientes.php?ver=' . $row['id'] . '" class="btn btn-sm btn-info" title="Ver">
+  <i class="typcn typcn-eye"></i></a>
+            <a href="clientes.php?editar=' . $row['id'] . '" class="btn btn-sm btn-primary" title="Editar">
+  <i class="typcn typcn-edit"></i></a>
           </td>
         </tr>';
                           }
                           ?>
 
-                        </tbody>
-                      </table>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
 
+                </div>
+                <footer class="footer">
+                    <div class="d-sm-flex justify-content-center justify-content-sm-between">
+                        <span class="text-center text-sm-left d-block d-sm-inline-block">Copyright © <a
+                                href="https://www.bootstrapdash.com/" target="_blank">bootstrapdash.com</a> 2020</span>
+                        <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Free <a
+                                href="https://www.bootstrapdash.com/" target="_blank">Bootstrap dashboard </a>templates
+                            from Bootstrapdash.com</span>
+                    </div>
+                </footer>
+            </div>
         </div>
-        <footer class="footer">
-          <div class="d-sm-flex justify-content-center justify-content-sm-between">
-            <span class="text-center text-sm-left d-block d-sm-inline-block">Copyright © <a href="https://www.bootstrapdash.com/" target="_blank">bootstrapdash.com</a> 2020</span>
-            <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Free <a href="https://www.bootstrapdash.com/" target="_blank">Bootstrap dashboard </a>templates from Bootstrapdash.com</span>
-          </div>
-        </footer>
-      </div>
     </div>
-  </div>
-  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-  <script src="vendors/js/vendor.bundle.base.js"></script>
-  <script src="js/off-canvas.js"></script>
-  <script src="js/hoverable-collapse.js"></script>
-  <script src="js/template.js"></script>
-  <script src="js/settings.js"></script>
-  <script src="js/todolist.js"></script>
-  <script src="vendors/progressbar.js/progressbar.min.js"></script>
-  <script src="vendors/chart.js/Chart.min.js"></script>
-  <script src="js/dashboard.js"></script>
-  <script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="vendors/js/vendor.bundle.base.js"></script>
+    <script src="js/off-canvas.js"></script>
+    <script src="js/hoverable-collapse.js"></script>
+    <script src="js/template.js"></script>
+    <script src="js/settings.js"></script>
+    <script src="js/todolist.js"></script>
+    <script src="vendors/progressbar.js/progressbar.min.js"></script>
+    <script src="vendors/chart.js/Chart.min.js"></script>
+    <script src="js/dashboard.js"></script>
+    <script>
     $(document).ready(function() {
-      $('#tablaClientes').DataTable();
+        $('#tablaClientes').DataTable();
     });
-  </script>
+    </script>
+    <script>
+    document.getElementById('toggleSidebarBtn').addEventListener('click', function() {
+        document.body.classList.toggle('sidebar-icon-only');
+    });
+    </script>
+
 </body>
 
 </html>
