@@ -1,82 +1,86 @@
 <?php
+session_start();
+if (!isset($_SESSION['usuario_id'])) {
+    header("Location: index.php");
+    exit;
+}
+
 require_once 'config/conexion.php';
 
-session_start();
+$usuario_id = $_SESSION['usuario_id'];
+$rol = $_SESSION['rol'];
 
-if (!isset($_SESSION['usuario'])) {
-  header("Location: index.php");
-  exit;
+$cliente_id = null;
+$nombre_cliente = 'Sin nombre';
+
+if ($rol === 'cliente') {
+    $stmt_cliente = $conexion->prepare("SELECT id, nombre_completo FROM cliente WHERE usuario_id = ?");
+    $stmt_cliente->bind_param("i", $usuario_id);
+    $stmt_cliente->execute();
+    $resultado_cliente = $stmt_cliente->get_result();
+    $cliente = $resultado_cliente->fetch_assoc();
+    if ($cliente) {
+        $cliente_id = $cliente['id'];
+        $nombre_cliente = $cliente['nombre_completo'];
+    }
+    $stmt_cliente->close();
 }
 
-// ELIMINAR SOLICITUD
-if (isset($_GET['eliminar'])) {
-  $id = intval($_GET['eliminar']);
-  if ($conexion->query("DELETE FROM solicitud WHERE id = $id")) {
-    header("Location: solicitudes.php");
-    exit();
-  } else {
-    echo "<pre>Error al eliminar solicitud: " . $conexion->error . "</pre>";
-    exit();
-  }
-}
+// Aquí podrías incluir lógica para otros roles si quieres...
 
+// Manejo form
 $modo_edicion = false;
 $modo_ver = false;
 
 $solicitud = [
-  'id' => '',
-  'fecha' => '',
-  'estado' => '',
-  'cliente_id' => '',
-  'propiedad_id' => ''
+    'id' => '',
+    'fecha' => '',
+    'estado' => '',
+    'cliente_id' => $cliente_id,
+    'propiedad_id' => ''
 ];
 
-// Si viene para editar
 if (isset($_GET['editar'])) {
-  $modo_edicion = true;
-  $id = intval($_GET['editar']);
-  $resultado = $conexion->query("SELECT * FROM solicitud WHERE id = $id");
-  if ($resultado && $resultado->num_rows > 0) {
-    $solicitud = $resultado->fetch_assoc();
-  }
+    $modo_edicion = true;
+    $id = intval($_GET['editar']);
+    $resultado = $conexion->query("SELECT * FROM solicitud WHERE id = $id");
+    if ($resultado && $resultado->num_rows > 0) {
+        $solicitud = $resultado->fetch_assoc();
+    }
 }
 
-// Si viene para ver
 if (isset($_GET['ver'])) {
-  $modo_ver = true;
-  $id = intval($_GET['ver']);
-  $resultado = $conexion->query("SELECT * FROM solicitud WHERE id = $id");
-  if ($resultado && $resultado->num_rows > 0) {
-    $solicitud = $resultado->fetch_assoc();
-  }
+    $modo_ver = true;
+    $id = intval($_GET['ver']);
+    $resultado = $conexion->query("SELECT * FROM solicitud WHERE id = $id");
+    if ($resultado && $resultado->num_rows > 0) {
+        $solicitud = $resultado->fetch_assoc();
+    }
 }
 
-// Registrar o actualizar
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  $fecha = $_POST['fecha'];
-  $estado = $_POST['estado'];
-  $cliente_id = $_POST['cliente_id'];
-  $propiedad_id = $_POST['propiedad_id'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $fecha = $_POST['fecha'];
+    $estado = $_POST['estado'];
+    $cliente_id_post = $_POST['cliente_id'] ?? $cliente_id;
+    $propiedad_id = $_POST['propiedad_id'];
 
-  if (isset($_POST['id']) && $_POST['id'] != '') {
-    // UPDATE
-    $id = intval($_POST['id']);
-    $sql = "UPDATE solicitud SET fecha=?, estado=?, cliente_id=?, propiedad_id=? WHERE id=?";
-    $stmt = $conexion->prepare($sql);
-    $stmt->bind_param("ssiii", $fecha, $estado, $cliente_id, $propiedad_id, $id);
-  } else {
-    // INSERT
-    $sql = "INSERT INTO solicitud (fecha, estado, cliente_id, propiedad_id) VALUES (?, ?, ?, ?)";
-    $stmt = $conexion->prepare($sql);
-    $stmt->bind_param("ssii", $fecha, $estado, $cliente_id, $propiedad_id);
-  }
-
-  $stmt->execute();
-  $stmt->close();
-  header("Location: solicitudes.php");
-  exit();
+    if (!empty($_POST['id'])) {
+        $id = intval($_POST['id']);
+        $sql = "UPDATE solicitud SET fecha=?, estado=?, cliente_id=?, propiedad_id=? WHERE id=?";
+        $stmt = $conexion->prepare($sql);
+        $stmt->bind_param("ssiii", $fecha, $estado, $cliente_id_post, $propiedad_id, $id);
+    } else {
+        $sql = "INSERT INTO solicitud (fecha, estado, cliente_id, propiedad_id) VALUES (?, ?, ?, ?)";
+        $stmt = $conexion->prepare($sql);
+        $stmt->bind_param("ssii", $fecha, $estado, $cliente_id_post, $propiedad_id);
+    }
+    $stmt->execute();
+    $stmt->close();
+    header("Location: solicitudes.php");
+    exit();
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -121,7 +125,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     HOME & STYLE
                 </div>
 
-
                 <div class=" d-flex align-items-center justify-content-end">
                     <ul class="navbar-nav navbar-nav-right">
                         <li class="nav-item nav-profile dropdown">
@@ -133,15 +136,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             </a>
                             <div class="dropdown-menu dropdown-menu-right navbar-dropdown"
                                 aria-labelledby="profileDropdown">
-                                
+                                <a href="perfil.php" class="dropdown-item text">
+                                    <i class="typcn typcn-user-outline mr-2"></i> Perfil
+                                </a>
                                 <a href="logout.php" class="dropdown-item text-danger">
                                     <i class="typcn typcn-power mr-2"></i> Cerrar sesión
                                 </a>
                             </div>
                         </li>
                     </ul>
-
-
                 </div>
             </div>
         </nav>
@@ -158,8 +161,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                     Inicio
                                 </p>
                             </div>
-
-
                         </div>
                         <button id="toggleSidebarBtn" class="btn btn-sm btn-outline-light ml-3">
                             <i class="typcn typcn-arrow-left-outline"></i>
@@ -172,10 +173,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <span class="menu-title">Dashboard </span>
                         </a>
                     </li>
+                    <?php if ($rol === 'admin'): ?>
                     <li class="nav-item">
                         <a class="nav-link" href="agentes.php">
                             <i class="typcn typcn-document-text menu-icon"></i>
-                            <span class="menu-title">Agenetes</span>
+                            <span class="menu-title">Agentes</span>
                         </a>
                     </li>
                     <li class="nav-item">
@@ -190,6 +192,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <span class="menu-title">Propietarios</span>
                         </a>
                     </li>
+                    <?php endif; ?>
+                    <?php if ($rol === 'admin' || $rol === 'agente'): ?>
                     <li class="nav-item">
                         <a class="nav-link" href="propiedades.php">
                             <i class="typcn typcn-document-text menu-icon"></i>
@@ -208,98 +212,98 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <span class="menu-title">Ventas</span>
                         </a>
                     </li>
+                    <?php endif; ?>
+                    <?php if ($rol === 'propietario'): ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="propiedades.php">
+                            <i class="typcn typcn-document-text menu-icon"></i>
+                            <span class="menu-title">Propiedades</span>
+                        </a>
+                    </li>
+                    <?php endif; ?>
+                    <?php if ($rol === 'cliente'): ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="solicitudes.php">
+                            <i class="typcn typcn-document-text menu-icon"></i>
+                            <span class="menu-title">Solicitudes</span>
+                        </a>
+                    </li>
+                    <?php endif; ?>
                 </ul>
             </nav>
             <!-- partial -->
             <div class="main-panel">
                 <div class="content-wrapper">
                     <div class="row">
-                        <div class="col-sm-6">
-                            <h3 class="mb-0 font-weight-bold">Solocitudes</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="content-wrapper">
-                    <div class="row">
+                        <?php if ($rol === 'cliente'): ?>
                         <!-- Formulario registrar / editar solicitud -->
-                        <div class="col-md-6 grid-margin stretch-card">
+                        <div class="col-md-12 grid-margin stretch-card">
                             <div class="card">
                                 <div class="card-body">
                                     <h4 class="card-title">
                                         <?= $modo_edicion ? 'Editar Solicitud' : ($modo_ver ? 'Ver Solicitud' : 'Registrar Solicitud') ?>
                                     </h4>
 
-                                    <form method="POST" class="forms-sample">
-                                        <input type="hidden" name="id" value="<?= $solicitud['id'] ?>">
+                                   <form method="POST" class="forms-sample">
+    <input type="hidden" name="id" value="<?= htmlspecialchars($solicitud['id']) ?>">
 
-                                        <div class="form-group">
-                                            <label for="fecha">Fecha</label>
-                                            <input type="date" class="form-control" name="fecha"
-                                                value="<?= $solicitud['fecha'] ?>"
-                                                <?= $modo_ver ? 'readonly' : 'required' ?>>
-                                        </div>
+    <div class="form-row">
+        <!-- Fecha -->
+        <div class="form-group col-md-3">
+            <label for="fecha">Fecha</label>
+            <input id="fecha" type="text" name="fecha" class="form-control" value="<?= date('Y-m-d') ?>" required readonly>
+        </div>
 
-                                        <div class="form-group">
-                                            <label for="estado">Estado</label>
-                                            <select class="form-control" name="estado"
-                                                <?= $modo_ver ? 'disabled' : 'required' ?>>
-                                                <option value="pendiente"
-                                                    <?= $solicitud['estado'] == 'pendiente' ? 'selected' : '' ?>>
-                                                    Pendiente</option>
-                                                <option value="aceptada"
-                                                    <?= $solicitud['estado'] == 'aceptada' ? 'selected' : '' ?>>Aceptada
-                                                </option>
-                                                <option value="rechazada"
-                                                    <?= $solicitud['estado'] == 'rechazada' ? 'selected' : '' ?>>
-                                                    Rechazada</option>
-                                            </select>
-                                        </div>
+        <!-- Estado -->
+        <div class="form-group col-md-3">
+            <label for="estado">Estado</label>
+            <select id="estado" name="estado" class="form-control" required>
+                <option value="pendiente">Pendiente</option>
+                <option value="aceptada">Aceptada</option>
+                <option value="rechazada">Rechazada</option>
+            </select>
+        </div>
 
-                                        <div class="form-group">
-                                            <label for="cliente_id">Cliente</label>
-                                            <select class="form-control" name="cliente_id"
-                                                <?= $modo_ver ? 'disabled' : 'required' ?>>
-                                                <option value="">Seleccione</option>
-                                                <?php
-                        $clientes = $conexion->query("SELECT id, nombre_completo FROM cliente");
-                        while ($c = $clientes->fetch_assoc()) {
-                          $selected = $c['id'] == $solicitud['cliente_id'] ? 'selected' : '';
-                          echo "<option value='{$c['id']}' $selected>{$c['nombre_completo']}</option>";
-                        }
-                        ?>
-                                            </select>
-                                        </div>
+        <!-- Cliente (solo visual) -->
+        <div>
+            <label class="block font-semibold mb-2">Nombre del Cliente</label>
+            <div class="p-3 rounded bg-gray-100 text-gray-900 select-none">
+                <?php echo htmlspecialchars($nombre_cliente); ?>
+            </div>
+        </div>
 
-                                        <div class="form-group">
-                                            <label for="propiedad_id">Propiedad</label>
-                                            <select class="form-control" name="propiedad_id"
-                                                <?= $modo_ver ? 'disabled' : 'required' ?>>
-                                                <option value="">Seleccione</option>
-                                                <?php
-                        $propiedades = $conexion->query("SELECT id, nombre FROM propiedad");
-                        while ($p = $propiedades->fetch_assoc()) {
-                          $selected = $p['id'] == $solicitud['propiedad_id'] ? 'selected' : '';
-                          echo "<option value='{$p['id']}' $selected>{$p['nombre']}</option>";
-                        }
-                        ?>
-                                            </select>
-                                        </div>
+        <!-- Propiedad -->
+        <div class="form-group col-md-3">
+            <label for="propiedad_id">Propiedad</label>
+            <select id="propiedad_id" name="propiedad_id" class="form-control" required>
+                <option value="">Seleccione</option>
+                <?php
+                $propiedades = $conexion->query("SELECT id, nombre FROM propiedad");
+                while ($p = $propiedades->fetch_assoc()) {
+                    echo "<option value='{$p['id']}'>{$p['nombre']}</option>";
+                }
+                ?>
+            </select>
+        </div>
+    </div>
 
-                                        <?php if ($modo_ver) : ?>
-                                        <a href="solicitudes.php" class="btn btn-light">Volver</a>
-                                        <?php else : ?>
-                                        <button type="submit"
-                                            class="btn btn-primary mr-2"><?= $modo_edicion ? 'Actualizar' : 'Guardar' ?></button>
-                                        <a href="solicitudes.php" class="btn btn-light">Cancelar</a>
-                                        <?php endif; ?>
-                                    </form>
+    <!-- ÚNICO input que viaja al servidor con el id del cliente -->
+    <input type="hidden" name="cliente_id" value="<?= (int)$cliente_id ?>">
+
+    <?php if ($modo_ver) : ?>
+        <a href="solicitudes.php" class="btn btn-light">Volver</a>
+    <?php else : ?>
+        <button type="submit" class="btn btn-primary mr-2"><?= $modo_edicion ? 'Actualizar' : 'Guardar' ?></button>
+        <a href="solicitudes.php" class="btn btn-light">Cancelar</a>
+    <?php endif; ?>
+</form>
 
                                 </div>
                             </div>
                         </div>
-
+                        <?php endif; ?>
                         <!-- Tabla de solicitudes -->
-                        <div class="col-lg-6 grid-margin stretch-card">
+                        <div class="col-md-12 grid-margin stretch-card">
                             <div class="card">
                                 <div class="card-body">
                                     <h4 class="card-title">Lista de Solicitudes</h4>
@@ -317,35 +321,34 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                             </thead>
                                             <tbody>
                                                 <?php
-                        $sql = "
-    SELECT s.id, s.fecha, s.estado,
-           c.nombre_completo AS cliente,
-           p.nombre AS propiedad
-    FROM solicitud s
-    JOIN cliente c ON s.cliente_id = c.id
-    JOIN propiedad p ON s.propiedad_id = p.id
-  ";
-                        $resultado = $conexion->query($sql);
+                            $sql = "
+                                SELECT s.id, s.fecha, s.estado,
+                                    c.nombre_completo AS cliente,
+                                    p.nombre AS propiedad
+                                FROM solicitud s
+                                JOIN cliente c ON s.cliente_id = c.id
+                                JOIN propiedad p ON s.propiedad_id = p.id
+                            ";
+                            $resultado = $conexion->query($sql);
 
-                        while ($row = $resultado->fetch_assoc()) {
-                          echo '<tr>
-      <td>' . $row['id'] . '</td>
-      <td>' . $row['fecha'] . '</td>
-      <td>' . $row['estado'] . '</td>
-      <td>' . $row['cliente'] . '</td>
-      <td>' . $row['propiedad'] . '</td>
-      <td>
-        <a href="solicitudes.php?ver=' . $row['id'] . '" class="btn btn-sm btn-info" title="Ver">
-  <i class="typcn typcn-eye"></i>
-</a>
-        <a href="solicitudes.php?editar=' . $row['id'] . '" class="btn btn-sm btn-primary" title="Editar">
-  <i class="typcn typcn-edit"></i>
-</a></td>
-    </tr>';
-                        }
-                        ?>
+                            while ($row = $resultado->fetch_assoc()) {
+                            echo '<tr>
+                                <td>' . $row['id'] . '</td>
+                                <td>' . $row['fecha'] . '</td>
+                                <td>' . $row['estado'] . '</td>
+                                <td>' . $row['cliente'] . '</td>
+                                <td>' . $row['propiedad'] . '</td>
+                                <td>
+                                    <a href="solicitudes.php?ver=' . $row['id'] . '" class="btn btn-sm btn-info" title="Ver">
+                                <i class="typcn typcn-eye"></i>
+                                </a>
+                                    <a href="solicitudes.php?editar=' . $row['id'] . '" class="btn btn-sm btn-primary" title="Editar">
+                                <i class="typcn typcn-edit"></i>
+                                </a></td>
+                                </tr>';
+                            }
+                            ?>
                                             </tbody>
-
                                         </table>
                                     </div>
                                 </div>
@@ -353,18 +356,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         </div>
                     </div>
                 </div>
-
-
-                <footer class="footer">
-                    <div class="d-sm-flex justify-content-center justify-content-sm-between">
-                        <span class="text-center text-sm-left d-block d-sm-inline-block">Copyright © <a
-                                href="https://www.bootstrapdash.com/" target="_blank">bootstrapdash.com</a> 2020</span>
-                        <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Free <a
-                                href="https://www.bootstrapdash.com/" target="_blank">Bootstrap dashboard </a>templates
-                            from Bootstrapdash.com</span>
-                    </div>
-                </footer>
-                <!-- partial -->
             </div>
             <!-- main-panel ends -->
         </div>

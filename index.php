@@ -1,9 +1,18 @@
+<?php
+session_start();
+
+// Check if the user is logged in
+$is_logged_in = isset($_SESSION['usuario_id']) && isset($_SESSION['rol']);
+$rol = $_SESSION['rol'] ?? '';
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8">
-    <title> HOME & STYLE</title>
+    <title>HOME & STYLE</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="Free HTML Templates" name="keywords">
     <meta content="Free HTML Templates" name="description">
@@ -24,14 +33,13 @@
     <!-- Bootstrap CSS (AGREGA ESTO) -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
 
-
     <!-- Customized Bootstrap Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
 </head>
 
 <body>
     <!-- Topbar Start -->
-   <div class="container-fluid bg-primary py-3">
+    <div class="container-fluid bg-primary py-3">
         <div class="container">
             <div class="row">
                 
@@ -62,14 +70,17 @@
                         </div>
 
                         <a href="contact.php" class="nav-item nav-link">Contáctanos</a>
-                        <a href="login.php" class="nav-item nav-link">Iniciar Sesión</a>
+                        <?php if ($is_logged_in && $rol === 'cliente'): ?>
+                            <a href="solicitudes.php" class="nav-item nav-link">Solicitudes</a>
+                            <a href="perfil.php" class="nav-item nav-link">Perfil</a>
+                        <?php else: ?>
+                            <a href="login.php" class="nav-item nav-link">Iniciar Sesión</a>
+                        <?php endif; ?>
                     </div>
                 </div>
             </nav>
         </div>
     </div>
-
-
     <!-- Navbar End -->
 
     <div class="container-fluid p-0">

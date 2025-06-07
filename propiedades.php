@@ -2,6 +2,15 @@
 require_once 'config/conexion.php';
 session_start();
 
+// Verificar si el usuario está autenticado
+if (!isset($_SESSION['usuario'])) {
+  header("Location: index.php");
+  exit;
+}
+
+// Obtener el rol del usuario desde la sesión
+$rol = $_SESSION['rol'] ?? 'invitado'; // Valor predeterminado si no está definido
+
 $modo_edicion = false;
 $modo_ver = false;
 
@@ -85,8 +94,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !$modo_ver) {
   exit();
 }
 ?>
-
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -135,7 +142,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !$modo_ver) {
                             </a>
                             <div class="dropdown-menu dropdown-menu-right navbar-dropdown"
                                 aria-labelledby="profileDropdown">
-                                
+                                <a href="perfil.php" class="dropdown-item text">
+                                    <i class="typcn typcn-user-outline mr-2"></i> Perfil
+                                </a>
                                 <a href="logout.php" class="dropdown-item text-danger">
                                     <i class="typcn typcn-power mr-2"></i> Cerrar sesión
                                 </a>
@@ -160,8 +169,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !$modo_ver) {
                                     Inicio
                                 </p>
                             </div>
-
-
                         </div>
                         <button id="toggleSidebarBtn" class="btn btn-sm btn-outline-light ml-3">
                             <i class="typcn typcn-arrow-left-outline"></i>
@@ -174,42 +181,62 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !$modo_ver) {
                             <span class="menu-title">Dashboard </span>
                         </a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="agentes.php">
-                            <i class="typcn typcn-document-text menu-icon"></i>
-                            <span class="menu-title">Agenetes</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="clientes.php">
-                            <i class="typcn typcn-document-text menu-icon"></i>
-                            <span class="menu-title">Clientes</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="propietarios.php">
-                            <i class="typcn typcn-document-text menu-icon"></i>
-                            <span class="menu-title">Propietarios</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="propiedades.php">
-                            <i class="typcn typcn-document-text menu-icon"></i>
-                            <span class="menu-title">Propiedades</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="solicitudes.php">
-                            <i class="typcn typcn-document-text menu-icon"></i>
-                            <span class="menu-title">Solicitudes</span>
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="ventas.php">
-                            <i class="typcn typcn-document-text menu-icon"></i>
-                            <span class="menu-title">Ventas</span>
-                        </a>
-                    </li>
+                    <?php if ($rol === 'admin'): ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="agentes.php">
+                                <i class="typcn typcn-document-text menu-icon"></i>
+                                <span class="menu-title">Agentes</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="clientes.php">
+                                <i class="typcn typcn-document-text menu-icon"></i>
+                                <span class="menu-title">Clientes</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="propietarios.php">
+                                <i class="typcn typcn-document-text menu-icon"></i>
+                                <span class="menu-title">Propietarios</span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                    <?php if ($rol === 'admin' || $rol === 'agente'): ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="propiedades.php">
+                                <i class="typcn typcn-document-text menu-icon"></i>
+                                <span class="menu-title">Propiedades</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="solicitudes.php">
+                                <i class="typcn typcn-document-text menu-icon"></i>
+                                <span class="menu-title">Solicitudes</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="ventas.php">
+                                <i class="typcn typcn-document-text menu-icon"></i>
+                                <span class="menu-title">Ventas</span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                    <?php if ($rol === 'propietario'): ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="propiedades.php">
+                                <i class="typcn typcn-document-text menu-icon"></i>
+                                <span class="menu-title">Propiedades</span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
+                    <?php if ($rol === 'cliente'): ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="solicitudes.php">
+                                <i class="typcn typcn-document-text menu-icon"></i>
+                                <span class="menu-title">Solicitudes</span>
+                            </a>
+                        </li>
+                    <?php endif; ?>
                 </ul>
             </nav>
             <div class="main-panel">
@@ -220,166 +247,173 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && !$modo_ver) {
                         </div>
                     </div>
                     <div class="content-wrapper">
-                        <div class="row">
-                            <!-- Formulario de registrar / editar propiedad -->
-                            <div class="col-md-6 grid-margin stretch-card">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h4 class="card-title">
-                                            <?= $modo_edicion ? 'Editar Propiedad' : ($modo_ver ? 'Ver Propiedad' : 'Registrar Propiedad') ?>
-                                        </h4>
+    <div class="row">
+        <!-- Formulario de registrar / editar propiedad -->
+        <div class="col-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">
+                        <?= $modo_edicion ? 'Editar Propiedad' : ($modo_ver ? 'Ver Propiedad' : 'Registrar Propiedad') ?>
+                    </h4>
 
-                                        <form method="POST" enctype="multipart/form-data" action="">
-                                            <input type="hidden" name="id" value="<?= $propiedad['id'] ?>">
+                    <form method="POST" enctype="multipart/form-data" action="">
+                        <input type="hidden" name="id" value="<?= $propiedad['id'] ?>">
 
-                                            <p class="text-muted mb-3"><span class="text-danger">*</span> Campos
-                                                obligatorios</p>
+                        <p class="text-muted mb-3"><span class="text-danger">*</span> Campos obligatorios</p>
 
-                                            <div class="form-group">
-                                                <label for="nombre">Nombre <span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" name="nombre"
-                                                    value="<?= $propiedad['nombre'] ?>"required
-                                                    <?= $modo_ver ? 'readonly' : '' ?>
-                                                    oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label for="tipo">Tipo <span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" name="tipo"
-                                                    value="<?= $propiedad['tipo'] ?>" required
-                                                    <?= $modo_ver ? 'readonly' : '' ?>
-                                                    oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')" placeholder="lujosa o economica">
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label for="precio">Precio <span class="text-danger">*</span></label>
-                                                <input type="number" step="0.01" class="form-control" name="precio"
-                                                    value="<?= $propiedad['precio'] ?>" required
-                                                    <?= $modo_ver ? 'readonly' : '' ?>
-                                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label for="estado">Estado <span class="text-danger">*</span></label>
-                                                <select class="form-control" name="estado" required
-                                                    <?= $modo_ver ? 'disabled' : '' ?>>
-                                                    <option value="disponible"
-                                                        <?= $propiedad['estado'] == 'disponible' ? 'selected' : '' ?>>
-                                                        Disponible</option>
-                                                    <option value="vendido"
-                                                        <?= $propiedad['estado'] == 'vendido' ? 'selected' : '' ?>>
-                                                        Vendido</option>
-                                                    <option value="reservado"
-                                                        <?= $propiedad['estado'] == 'reservado' ? 'selected' : '' ?>>
-                                                        Reservado</option>
-                                                </select>
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label for="tamanio">Tamaño <span class="text-danger">*</span></label>
-                                                <input type="text" class="form-control" name="tamanio"
-                                                    value="<?= $propiedad['tamanio'] ?>" required
-                                                    <?= $modo_ver ? 'readonly' : '' ?>>
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label for="descripcion">Descripción <span
-                                                        class="text-danger">*</span></label>
-                                                <textarea class="form-control" name="descripcion" rows="3" required
-                                                    <?= $modo_ver ? 'readonly' : '' ?>><?= $propiedad['descripcion'] ?></textarea>
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label for="propietario_id">Propietario <span
-                                                        class="text-danger">*</span></label>
-                                                <select class="form-control" name="propietario_id" required
-                                                    <?= $modo_ver ? 'disabled' : '' ?>>
-                                                    <option value="">Seleccione</option>
-                                                    <?php
-      $propietarios = $conexion->query("SELECT id, nombre FROM propietario");
-      while ($p = $propietarios->fetch_assoc()) {
-        $selected = $p['id'] == $propiedad['propietario_id'] ? 'selected' : '';
-        echo "<option value='{$p['id']}' $selected>{$p['nombre']}</option>";
-      }
-      ?>
-                                                </select>
-                                            </div>
-
-                                            <div class="form-group">
-                                                <label>Imágenes (puedes seleccionar varias)</label>
-                                                <input type="file" name="imagenes[]" class="form-control" multiple
-                                                    <?= $modo_ver ? 'disabled' : '' ?>>
-                                            </div>
-
-                                            <?php if ($modo_ver): ?>
-                                            <a href="propiedades.php" class="btn btn-light">Volver</a>
-                                            <?php else: ?>
-                                            <button type="submit"
-                                                class="btn btn-primary mr-2"><?= $modo_edicion ? 'Actualizar' : 'Guardar' ?></button>
-                                            <a href="propiedades.php" class="btn btn-light">Cancelar</a>
-                                            <?php endif; ?>
-                                        </form>
-
-
-                                    </div>
-                                </div>
+                        <div class="form-row">
+                            <!-- Nombre -->
+                            <div class="form-group col-md-4">
+                                <label for="nombre">Nombre <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="nombre"
+                                    value="<?= $propiedad['nombre'] ?>" required
+                                    <?= $modo_ver ? 'readonly' : '' ?>
+                                    oninput="this.value = this.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '')">
                             </div>
 
-                            <!-- Tabla de propiedades -->
-                            <div class="col-lg-6 grid-margin stretch-card">
-                                <div class="card">
-                                    <div class="card-body">
-                                        <h4 class="card-title">Lista de Propiedades</h4>
-                                        <div class="table-responsive">
-                                            <table class="table table-striped" id="tablaPropiedades">
-                                                <thead>
-                                                    <tr>
-                                                        <th>ID</th>
-                                                        <th>Nombre</th>
-                                                        <th>Tipo</th>
-                                                        <th>Precio</th>
-                                                        <th>Estado</th>
-                                                        <th>Propietario</th>
-                                                        <th>Acciones</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <?php
-                          $resultado = $conexion->query("
-    SELECT p.id, p.nombre, p.tipo, p.precio, p.estado, pr.nombre AS propietario
-    FROM propiedad p
-    INNER JOIN propietario pr ON p.propietario_id = pr.id
-  ");
+                            <!-- Tipo -->
+                            <div class="form-group col-md-4">
+                                <label for="tipo">Tipo <span class="text-danger">*</span></label>
+                                <select class="form-control" name="tipo" required
+                                    <?= $modo_ver ? 'disabled' : '' ?>>
+                                    <option value="economica"
+                                        <?= $propiedad['tipo'] == 'economica' ? 'selected' : '' ?>>
+                                        Económica</option>
+                                    <option value="lujo"
+                                        <?= $propiedad['tipo'] == 'lujo' ? 'selected' : '' ?>>
+                                        Lujo</option>
+                                </select>
+                            </div>
 
-                          while ($row = $resultado->fetch_assoc()) {
-                            echo '<tr>
-      <td>' . $row['id'] . '</td>
-      <td>' . $row['nombre'] . '</td>
-      <td>' . $row['tipo'] . '</td>
-      <td>' . $row['precio'] . '</td>
-      <td>' . $row['estado'] . '</td>
-      <td>' . $row['propietario'] . '</td>
-      <td>
-        <a href="propiedades.php?ver=' . $row['id'] . '" class="btn btn-sm btn-info" title="Ver">
-  <i class="typcn typcn-eye"></i>
-</a>
+                            <!-- Precio -->
+                            <div class="form-group col-md-4">
+                                <label for="precio">Precio <span class="text-danger">*</span></label>
+                                <input type="number" step="0.01" class="form-control" name="precio"
+                                    value="<?= $propiedad['precio'] ?>" required
+                                    <?= $modo_ver ? 'readonly' : '' ?>
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                            </div>
 
-<a href="propiedades.php?editar=' . $row['id'] . '" class="btn btn-sm btn-primary" title="Editar">
-                                    <i class="typcn typcn-edit"></i></a>
-      </td>
-    </tr>';
-                          }
-                          ?>
-                                                </tbody>
+                            <!-- Estado -->
+                            <div class="form-group col-md-4">
+                                <label for="estado">Estado <span class="text-danger">*</span></label>
+                                <select class="form-control" name="estado" required
+                                    <?= $modo_ver ? 'disabled' : '' ?>>
+                                    <option value="disponible"
+                                        <?= $propiedad['estado'] == 'disponible' ? 'selected' : '' ?>>
+                                        Disponible</option>
+                                    <option value="vendido"
+                                        <?= $propiedad['estado'] == 'vendido' ? 'selected' : '' ?>>
+                                        Vendido</option>
+                                    <option value="reservado"
+                                        <?= $propiedad['estado'] == 'reservado' ? 'selected' : '' ?>>
+                                        Reservado</option>
+                                </select>
+                            </div>
 
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
+                            <!-- Tamaño -->
+                            <div class="form-group col-md-4">
+                                <label for="tamanio">Tamaño <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" name="tamanio"
+                                    value="<?= $propiedad['tamanio'] ?>" required
+                                    <?= $modo_ver ? 'readonly' : '' ?>>
+                            </div>
+
+                            <!-- Descripción -->
+                            <div class="form-group col-md-4">
+                                <label for="descripcion">Descripción <span class="text-danger">*</span></label>
+                                <textarea class="form-control" name="descripcion" rows="3" required
+                                    <?= $modo_ver ? 'readonly' : '' ?>><?= $propiedad['descripcion'] ?></textarea>
+                            </div>
+
+                            <!-- Propietario -->
+                            <div class="form-group col-md-6">
+                                <label for="propietario_id">Propietario <span class="text-danger">*</span></label>
+                                <select class="form-control" name="propietario_id" required
+                                    <?= $modo_ver ? 'disabled' : '' ?>>
+                                    <option value="">Seleccione</option>
+                                    <?php
+                                    $propietarios = $conexion->query("SELECT id, nombre FROM propietario");
+                                    while ($p = $propietarios->fetch_assoc()) {
+                                        $selected = $p['id'] == $propiedad['propietario_id'] ? 'selected' : '';
+                                        echo "<option value='{$p['id']}' $selected>{$p['nombre']}</option>";
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+
+                            <!-- Imágenes -->
+                            <div class="form-group col-md-6">
+                                <label>Imágenes (puedes seleccionar varias)</label>
+                                <input type="file" name="imagenes[]" class="form-control" multiple
+                                    <?= $modo_ver ? 'disabled' : '' ?>>
                             </div>
                         </div>
-                    </div>
 
+                        <?php if ($modo_ver): ?>
+                        <a href="propiedades.php" class="btn btn-light">Volver</a>
+                        <?php else: ?>
+                        <button type="submit"
+                            class="btn btn-primary mr-2"><?= $modo_edicion ? 'Actualizar' : 'Guardar' ?></button>
+                        <a href="propiedades.php" class="btn btn-light">Cancelar</a>
+                        <?php endif; ?>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabla de propiedades -->
+        <div class="col-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="card-title">Lista de Propiedades</h4>
+                    <div class="table-responsive">
+                        <table class="table table-striped" id="tablaPropiedades">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nombre</th>
+                                    <th>Tipo</th>
+                                    <th>Precio</th>
+                                    <th>Estado</th>
+                                    <th>Propietario</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php
+                                $resultado = $conexion->query("
+                                    SELECT p.id, p.nombre, p.tipo, p.precio, p.estado, pr.nombre AS propietario
+                                    FROM propiedad p
+                                    INNER JOIN propietario pr ON p.propietario_id = pr.id
+                                ");
+                                while ($row = $resultado->fetch_assoc()) {
+                                    echo '<tr>
+                                        <td>' . $row['id'] . '</td>
+                                        <td>' . $row['nombre'] . '</td>
+                                        <td>' . $row['tipo'] . '</td>
+                                        <td>' . $row['precio'] . '</td>
+                                        <td>' . $row['estado'] . '</td>
+                                        <td>' . $row['propietario'] . '</td>
+                                        <td>
+                                            <a href="propiedades.php?ver=' . $row['id'] . '" class="btn btn-sm btn-info" title="Ver">
+                                                <i class="typcn typcn-eye"></i>
+                                            </a>
+                                            <a href="propiedades.php?editar=' . $row['id'] . '" class="btn btn-sm btn-primary" title="Editar">
+                                                <i class="typcn typcn-edit"></i>
+                                            </a>
+                                        </td>
+                                    </tr>';
+                                }
+                                ?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
                 </div>
             </div>
         </div>

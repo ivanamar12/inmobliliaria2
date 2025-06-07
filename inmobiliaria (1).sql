@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 03, 2025 at 11:24 PM
+-- Generation Time: Jun 08, 2025 at 12:51 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -35,13 +35,6 @@ CREATE TABLE `agente` (
   `usuario_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `agente`
---
-
-INSERT INTO `agente` (`id`, `nombre_completo`, `telefono`, `email`, `usuario_id`) VALUES
-(1, 'ana luna', '04167898745', 'guhgrgt@gmail.com', NULL);
-
 -- --------------------------------------------------------
 
 --
@@ -54,15 +47,9 @@ CREATE TABLE `cliente` (
   `nombre_completo` varchar(100) DEFAULT NULL,
   `telefono` varchar(20) DEFAULT NULL,
   `genero` enum('M','F','Otro') DEFAULT NULL,
-  `email` varchar(100) DEFAULT NULL
+  `email` varchar(100) DEFAULT NULL,
+  `usuario_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `cliente`
---
-
-INSERT INTO `cliente` (`id`, `ci`, `nombre_completo`, `telefono`, `genero`, `email`) VALUES
-(3, '42344', 'fgfgfg', '565456', 'F', 'fsyfvgsyf@gmail.com');
 
 -- --------------------------------------------------------
 
@@ -103,15 +90,9 @@ CREATE TABLE `propietario` (
   `id` int(11) NOT NULL,
   `nombre` varchar(100) DEFAULT NULL,
   `telefono` varchar(20) DEFAULT NULL,
-  `correo` varchar(100) DEFAULT NULL
+  `correo` varchar(100) DEFAULT NULL,
+  `usuario_id` varchar(225) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `propietario`
---
-
-INSERT INTO `propietario` (`id`, `nombre`, `telefono`, `correo`) VALUES
-(2, 'retrtyry', '345545643', 'fsgrfty@gmail.com');
 
 -- --------------------------------------------------------
 
@@ -127,15 +108,6 @@ CREATE TABLE `solicitud` (
   `propiedad_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
---
--- Dumping data for table `solicitud`
---
-
-INSERT INTO `solicitud` (`id`, `fecha`, `estado`, `cliente_id`, `propiedad_id`) VALUES
-(1, '2025-05-06', 'aceptada', 1, 1),
-(2, '2025-05-06', 'rechazada', 1, 2),
-(3, '2025-05-06', 'aceptada', 3, 1);
-
 -- --------------------------------------------------------
 
 --
@@ -146,7 +118,7 @@ CREATE TABLE `usuarios` (
   `id` int(11) NOT NULL,
   `nombre_usuario` varchar(45) NOT NULL,
   `contrasena` varchar(255) NOT NULL,
-  `rol` enum('admin','agente') DEFAULT 'agente'
+  `rol` enum('admin','agente','cliente','propietario') DEFAULT 'agente'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -162,14 +134,6 @@ CREATE TABLE `venta` (
   `cliente_id` int(11) DEFAULT NULL,
   `agente_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `venta`
---
-
-INSERT INTO `venta` (`id`, `fecha`, `monto`, `cliente_id`, `agente_id`) VALUES
-(1, '2025-05-12', 3435.00, 1, 1),
-(2, '2025-05-05', 3432.00, 3, 1);
 
 --
 -- Indexes for dumped tables
@@ -234,49 +198,49 @@ ALTER TABLE `venta`
 -- AUTO_INCREMENT for table `agente`
 --
 ALTER TABLE `agente`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `cliente`
 --
 ALTER TABLE `cliente`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `propiedad`
 --
 ALTER TABLE `propiedad`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `propiedad_imagen`
 --
 ALTER TABLE `propiedad_imagen`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `propietario`
 --
 ALTER TABLE `propietario`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `solicitud`
 --
 ALTER TABLE `solicitud`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `venta`
 --
 ALTER TABLE `venta`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Constraints for dumped tables

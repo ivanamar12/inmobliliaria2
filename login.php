@@ -1,39 +1,48 @@
 <?php
 session_start();
-require 'config/conexion.php';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $usuario = $_POST['usuario'];
-  $contrasena = $_POST['contrasena'];
-
-  $stmt = $conexion->prepare("SELECT id, nombre_usuario, contrasena, rol FROM usuarios WHERE nombre_usuario = ?");
-  $stmt->bind_param("s", $usuario);
-  $stmt->execute();
-  $resultado = $stmt->get_result();
-
-  if ($resultado->num_rows === 1) {
-    $usuarioDB = $resultado->fetch_assoc();
-
-    if (password_verify($contrasena, $usuarioDB['contrasena'])) {
-      // Usuario autenticado
-      $_SESSION['usuario_id'] = $usuarioDB['id'];
-      $_SESSION['usuario'] = $usuarioDB['nombre_usuario'];
-      $_SESSION['rol'] = $usuarioDB['rol'];
-
-      header("Location: dashboard.php");
-      exit;
-    } else {
-      $error = "Contraseña incorrecta";
-    }
-  } else {
-    $error = "Usuario no encontrado";
-  }
+// Verificamos que el usuario haya iniciado sesión
+if (!isset($_SESSION['usuario'])) {
+    header("Location: index.php");
+    exit;
 }
+
+// Conexión a base de datos
+require_once 'config/conexion.php';
+
+// Nos aseguramos que el ID de usuario esté en la sesión (con clave 'id')
+$usuarioId = $_SESSION['id'] ?? null;
+
+if ($usuarioId) {
+    // Preparamos y ejecutamos consulta para obtener cliente relacionado al usuario
+    $clienteStmt = $conexion->prepare("SELECT id, nombre_completo FROM cliente WHERE usuario_id = ? LIMIT 1");
+    $clienteStmt->bind_param("i", $usuarioId);
+    $clienteStmt->execute();
+    $cliente = $clienteStmt->get_result()->fetch_assoc();
+
+    // Asignamos en la sesión el cliente y el nombre completo o valores por defecto
+    if ($cliente) {
+        $_SESSION['cliente_id'] = $cliente['id'];
+        $_SESSION['nombre_cliente'] = $cliente['llllllll'];
+    } else {
+        $_SESSION['cliente_id'] = null;
+        $_SESSION['nombre_cliente'] = 'Sin nombre';
+    }
+
+    $clienteStmt->close();
+} else {
+    // No hay usuario identificado, asignamos valores por defecto
+    $_SESSION['cliente_id'] = null;
+    $_SESSION['nombre_cliente'] = 'lllllll';
+}
+
+// Puedes usar $_SESSION['nombre_cliente'] para mostrar el nombre en tus formularios
 ?>
+
+
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -48,11 +57,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- inject:css -->
     <link rel="stylesheet" href="css/vertical-layout-light/style.css">
     <link rel="stylesheet" href="css/login-custom.css">
-
     <!-- endinject -->
     <link rel="shortcut icon" href="images/favicon.png" />
 </head>
-
 <body>
     <div class="container-scroller">
         <div class="container-fluid page-body-wrapper full-page-wrapper">
@@ -87,17 +94,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     No tienes una cuenta? <a href="register.php" class="text-primary">Registrate</a>
                                 </div>
                             </form>
-
-
                         </div>
                     </div>
                 </div>
             </div>
-            <!-- content-wrapper ends -->
         </div>
-        <!-- page-body-wrapper ends -->
     </div>
-    <!-- container-scroller -->
     <!-- base:js -->
     <script src="vendors/js/vendor.bundle.base.js"></script>
     <!-- endinject -->
@@ -109,5 +111,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="js/todolist.js"></script>
     <!-- endinject -->
 </body>
-
 </html>
