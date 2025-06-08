@@ -1,19 +1,14 @@
 <?php
-require_once 'config/conexion.php';
-
 session_start();
-
-// Asegúrate de que $_SESSION['rol'] esté definido y tenga un valor válido
-if (!isset($_SESSION['rol'])) {
-    $_SESSION['rol'] = 'invitado'; // Valor por defecto si no está definido
-}
-
-$rol = $_SESSION['rol'];
-
-if (!isset($_SESSION['usuario'])) {
+if (!isset($_SESSION['usuario_id'], $_SESSION['rol'])) {
     header("Location: index.php");
     exit;
 }
+$usuario_id = $_SESSION['usuario_id'];
+$rol = $_SESSION['rol'];
+
+require_once 'config/conexion.php';
+
 
 // ELIMINAR VENTA
 if (isset($_GET['eliminar'])) {

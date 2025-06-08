@@ -1,13 +1,10 @@
 <?php
 session_start();
-
-// Si el usuario ya ha iniciado sesión, redirigir a la página de inicio
-if (isset($_SESSION['usuario'])) {
+if (isset($_SESSION['usuario_id'])) {
     header("Location: index.php");
     exit;
 }
 
-// Conexión a la base de datos
 require_once 'config/conexion.php';
 
 // Procesar el inicio de sesión
@@ -16,17 +13,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $contrasena = $_POST['contrasena'];
 
     // Verificar las credenciales contra la base de datos
-    $stmt = $conexion->prepare("SELECT id, rol FROM usuarios WHERE usuario = ? AND contrasena = ?");
-    $stmt->bind_param("ss", $usuario, $contrasena);
+    $stmt = $conexion->prepare("SELECT id, rol, contrasena FROM usuarios WHERE nombre_usuario = ?");
+    $stmt->bind_param("s", $usuario);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
         $row = $result->fetch_assoc();
-        $_SESSION['usuario_id'] = $row['id'];
-        $_SESSION['rol'] = $row['rol'];
-        header("Location: index.php"); // Redirigir a la página de inicio
-        exit;
+        if (password_verify($contrasena, $row['contrasena'])) {
+            $_SESSION['usuario_id'] = $row['id'];
+            $_SESSION['rol'] = $row['rol'];
+            header("Location: dashboard.php"); 
+            exit;
+        } else {
+            echo "Credenciales incorrectas";
+        }
     } else {
         echo "Credenciales incorrectas";
     }

@@ -168,6 +168,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <p class="sidebar-menu-title">MENÚ</p>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="index.php">
+                            <i class="typcn typcn-device-desktop menu-icon"></i>
+                            <span class="menu-title">Inicio </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="dashboard.php">
                             <i class="typcn typcn-device-desktop menu-icon"></i>
                             <span class="menu-title">Dashboard </span>

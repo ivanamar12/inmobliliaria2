@@ -1,15 +1,13 @@
 <?php
-require 'config/conexion.php';
 session_start();
-
-// Check if the user is logged in
-if (!isset($_SESSION['usuario_id'])) {
-    header("Location: login.php");
+if (!isset($_SESSION['usuario_id'], $_SESSION['rol'])) {
+    header("Location: index.php");
     exit;
 }
+$usuario_id = $_SESSION['usuario_id'];
+$rol = $_SESSION['rol'];
 
-// Get the user's role from the session
-$rol = $_SESSION['rol'] ?? 'invitado'; // Default role if not set
+require 'config/conexion.php';
 ?>
 
 <!DOCTYPE html>
@@ -91,6 +89,12 @@ $rol = $_SESSION['rol'] ?? 'invitado'; // Default role if not set
                             <i class="typcn typcn-arrow-left-outline"></i>
                         </button>
                         <p class="sidebar-menu-title">MENÚ</p>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.php">
+                            <i class="typcn typcn-device-desktop menu-icon"></i>
+                            <span class="menu-title">Inicio </span>
+                        </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="dashboard.php">

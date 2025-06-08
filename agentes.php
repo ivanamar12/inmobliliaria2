@@ -1,14 +1,13 @@
 <?php
-require_once 'config/conexion.php';
-
 session_start();
-if (!isset($_SESSION['usuario'])) {
-  header("Location: index.php");
-  exit;
+if (!isset($_SESSION['usuario_id'], $_SESSION['rol'])) {
+    header("Location: index.php");
+    exit;
 }
+$usuario_id = $_SESSION['usuario_id'];
+$rol = $_SESSION['rol'];
 
-// Asegúrate de que $rol esté definido
-$rol = isset($_SESSION['rol']) ? $_SESSION['rol'] : 'invitado';
+require_once 'config/conexion.php';
 
 $modo_edicion = false;
 $modo_ver = false;
@@ -198,11 +197,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         <p class="sidebar-menu-title">MENÚ</p>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="index.php">
+                            <i class="typcn typcn-device-desktop menu-icon"></i>
+                            <span class="menu-title">Inicio </span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="dashboard.php">
                             <i class="typcn typcn-device-desktop menu-icon"></i>
                             <span class="menu-title">Dashboard </span>
                         </a>
                     </li>
+                    
                     <?php if ($rol === 'admin'): ?>
                     <li class="nav-item">
                         <a class="nav-link" href="agentes.php">

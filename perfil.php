@@ -1,14 +1,13 @@
 <?php
-require 'config/conexion.php';
 session_start();
-
-if (!isset($_SESSION['usuario_id'])) {
-    header("Location: login.php");
+if (!isset($_SESSION['usuario_id'], $_SESSION['rol'])) {
+    header("Location: index.php");
     exit;
 }
-
 $usuario_id = $_SESSION['usuario_id'];
 $rol = $_SESSION['rol'];
+
+require 'config/conexion.php';
 
 // Obtener información del usuario
 $stmt_usuario = $conexion->prepare("SELECT nombre_usuario, contrasena, rol FROM usuarios WHERE id = ?");
@@ -133,6 +132,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <i class="typcn typcn-arrow-left-outline"></i>
                         </button>
                         <p class="sidebar-menu-title">MENÚ</p>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.php">
+                            <i class="typcn typcn-device-desktop menu-icon"></i>
+                            <span class="menu-title">Inicio </span>
+                        </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="dashboard.php">

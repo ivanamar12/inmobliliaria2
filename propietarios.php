@@ -1,16 +1,12 @@
 <?php
-require_once 'config/conexion.php';
-
 session_start();
-
-// Verificar si el usuario está autenticado
-if (!isset($_SESSION['usuario'])) {
-  header("Location: index.php");
-  exit;
+if (!isset($_SESSION['usuario_id'], $_SESSION['rol'])) {
+    header("Location: index.php");
+    exit;
 }
-
-// Obtener el rol del usuario desde la sesión
-$rol = $_SESSION['rol'] ?? 'invitado'; // Valor predeterminado si no está definido
+$usuario_id = $_SESSION['usuario_id'];
+$rol = $_SESSION['rol'];
+require_once 'config/conexion.php';
 
 $modo_edicion = false;
 $modo_ver = false;
@@ -200,6 +196,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <i class="typcn typcn-arrow-left-outline"></i>
                         </button>
                         <p class="sidebar-menu-title">MENÚ</p>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.php">
+                            <i class="typcn typcn-device-desktop menu-icon"></i>
+                            <span class="menu-title">Inicio </span>
+                        </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="dashboard.php">
