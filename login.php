@@ -1,45 +1,37 @@
 <?php
 session_start();
 
-// Verificamos que el usuario haya iniciado sesión
-if (!isset($_SESSION['usuario'])) {
+// Si el usuario ya ha iniciado sesión, redirigir a la página de inicio
+if (isset($_SESSION['usuario'])) {
     header("Location: index.php");
     exit;
 }
 
-// Conexión a base de datos
+// Conexión a la base de datos
 require_once 'config/conexion.php';
 
-// Nos aseguramos que el ID de usuario esté en la sesión (con clave 'id')
-$usuarioId = $_SESSION['id'] ?? null;
+// Procesar el inicio de sesión
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $usuario = $_POST['usuario'];
+    $contrasena = $_POST['contrasena'];
 
-if ($usuarioId) {
-    // Preparamos y ejecutamos consulta para obtener cliente relacionado al usuario
-    $clienteStmt = $conexion->prepare("SELECT id, nombre_completo FROM cliente WHERE usuario_id = ? LIMIT 1");
-    $clienteStmt->bind_param("i", $usuarioId);
-    $clienteStmt->execute();
-    $cliente = $clienteStmt->get_result()->fetch_assoc();
+    // Verificar las credenciales contra la base de datos
+    $stmt = $conexion->prepare("SELECT id, rol FROM usuarios WHERE usuario = ? AND contrasena = ?");
+    $stmt->bind_param("ss", $usuario, $contrasena);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
-    // Asignamos en la sesión el cliente y el nombre completo o valores por defecto
-    if ($cliente) {
-        $_SESSION['cliente_id'] = $cliente['id'];
-        $_SESSION['nombre_cliente'] = $cliente['llllllll'];
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $_SESSION['usuario_id'] = $row['id'];
+        $_SESSION['rol'] = $row['rol'];
+        header("Location: index.php"); // Redirigir a la página de inicio
+        exit;
     } else {
-        $_SESSION['cliente_id'] = null;
-        $_SESSION['nombre_cliente'] = 'Sin nombre';
+        echo "Credenciales incorrectas";
     }
-
-    $clienteStmt->close();
-} else {
-    // No hay usuario identificado, asignamos valores por defecto
-    $_SESSION['cliente_id'] = null;
-    $_SESSION['nombre_cliente'] = 'lllllll';
 }
-
-// Puedes usar $_SESSION['nombre_cliente'] para mostrar el nombre en tus formularios
 ?>
-
-
 
 <!DOCTYPE html>
 <html lang="en">

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 08, 2025 at 12:51 AM
+-- Generation Time: Jun 08, 2025 at 02:36 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -121,6 +121,13 @@ CREATE TABLE `usuarios` (
   `rol` enum('admin','agente','cliente','propietario') DEFAULT 'agente'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Dumping data for table `usuarios`
+--
+
+INSERT INTO `usuarios` (`id`, `nombre_usuario`, `contrasena`, `rol`) VALUES
+(14, 'admin', '$2y$10$jMjqxmTT/BLY6GZTuBPkhOyoE1nG5xau406I/RH0z4vk5AISMj7Qq', 'admin');
+
 -- --------------------------------------------------------
 
 --
@@ -143,8 +150,7 @@ CREATE TABLE `venta` (
 -- Indexes for table `agente`
 --
 ALTER TABLE `agente`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `usuario_id` (`usuario_id`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `cliente`
@@ -234,7 +240,7 @@ ALTER TABLE `solicitud`
 -- AUTO_INCREMENT for table `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `venta`
@@ -245,12 +251,6 @@ ALTER TABLE `venta`
 --
 -- Constraints for dumped tables
 --
-
---
--- Constraints for table `agente`
---
-ALTER TABLE `agente`
-  ADD CONSTRAINT `agente_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`);
 
 --
 -- Constraints for table `propiedad_imagen`
